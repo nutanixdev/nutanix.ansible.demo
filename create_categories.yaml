@@ -1,0 +1,34 @@
+---
+- name: Create Prism Central categories playbook
+  hosts: localhost
+  gather_facts: false
+  collections:
+    - nutanix.ncp
+  module_defaults:
+    group/nutanix.ncp.ntnx:
+      nutanix_host: "{{ pc_ip }}"
+      nutanix_username: "{{ vault_pc_username }}"
+      nutanix_password: "{{ vault_pc_password }}"
+      validate_certs: false
+
+  tasks:
+  - name: task to create category keys
+    ntnx_categories:
+      state: "present"
+      name: "nutanix_ansible"
+      desc: "Category key created with Nutanix Ansible module"
+    register: create_key
+
+  - name: task to create category values
+    ntnx_categories:
+      state: "present"
+      name: "nutanix_ansible"
+      values:
+        - "registered"
+        - "unregistered"
+    register: create_values
+
+  - name: Print result
+    ansible.builtin.debug:
+      var: create_values
+    when: create_values is defined
